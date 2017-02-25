@@ -72,7 +72,7 @@ export default {
   methods: {
     getToken() {
       this.$http
-      .get('http://localhost:3000/auth/guest')
+      .get('https://vbapi.herokuapp.com/auth/guest')
       .then((res) => {
         this.token = res.body.jwt;
       });
@@ -114,7 +114,7 @@ export default {
             token,
           };
 
-          this.$http.get('http://localhost:3000/search/point', { params })
+          this.$http.get('https://vbapi.herokuapp.com/search/point', { params })
             .then((res) => {
               console.log(res);
               this.records = res.body.species;
