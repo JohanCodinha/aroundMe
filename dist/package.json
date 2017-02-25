@@ -1,0 +1,10 @@
+{
+ "name": "aroundme",
+ "version": "1.0.0",
+ "description": "A demo project using the victorian biodiversity atlas API",
+ "author": "Johan Codinha",
+ "private": true,
+ "scripts": {
+   "postinstall": "npm install express"
+ }
+}
