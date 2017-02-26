@@ -28,6 +28,7 @@
     <md-icon >my_location</md-icon>
   </md-button>
   <!-- <pre>{{species}}</pre> -->
+  <pre>{{status}}</pre>
   </div>
 </template>
 
@@ -40,38 +41,43 @@ export default {
     const data = {
       records: [],
       token: 'blank',
+      status: {
+        token: 'waiting for token',
+        error: '',
+      },
     };
     return data;
   },
   computed: {
     species() {
       return this.records.reduce((accuSpecies, specie) => {
+        const specieClone = Object.assign({}, {
+          commonNme: specie.commonNme,
+          scientificDisplayNme: specie.scientificDisplayNme,
+          taxonId: specie.taxonId,
+          totalCountInt: Object.prototype.hasOwnProperty.call(specie, 'totalCountInt')
+            ? specie.totalCountInt
+            : 1,
+        });
+
         // specie already present in species ? increment count : add to species
-        if (accuSpecies.some(accuSpecie => accuSpecie.taxonId === specie.taxonId)) {
-          accuSpecies.map((accuSpecie) => {
-            if (accuSpecie.taxonId !== specie.taxonId) return accuSpecie;
-            /* eslint-disable no-param-reassign */
-            accuSpecie.totalCountInt += specie.totalCountInt;
-            /* eslint-enable no-param-reassign */
-            return accuSpecie;
-          });
-        } else {
-          accuSpecies.push({
-            commonNme: specie.commonNme,
-            scientificDisplayNme: specie.scientificDisplayNme,
-            taxonId: specie.taxonId,
-            totalCountInt: specie.totalCountInt,
-          });
+        const specieIndex = accuSpecies
+          .findIndex(accuspecie => accuspecie.taxonId === specieClone.taxonId);
+
+        if (specieIndex > -1) {
+          specieClone.totalCountInt += accuSpecies[specieIndex].totalCountInt;
+          return [...accuSpecies.slice(0, specieIndex),
+            specieClone,
+            ...accuSpecies.slice(specieIndex + 1)];
         }
-        console.log(accuSpecies);
-        return accuSpecies;
+        return [...accuSpecies, specieClone];
       }, []);
     },
   },
 
   methods: {
     getToken() {
-      this.$http
+      return this.$http
       .get('https://vbapi.herokuapp.com/auth/guest')
       .then((res) => {
         this.token = res.body.jwt;
@@ -79,26 +85,29 @@ export default {
     },
 
     getLocation() {
-      function error(e) {
-        console.log(e);
-      }
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      };
 
       return new Promise((resolve, reject) => {
+        // resolve({ accu: '', lat: '', long: '' });
         if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            const accu = position.coords.accuracy;
-            const lat = position.coords.latitude;
-            const long = position.coords.longitude;
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const accu = position.coords.accuracy;
+              const lat = position.coords.latitude;
+              const long = position.coords.longitude;
+              console.log(`Position aquired, accuracy : ${position.coords.accuracy}`);
 
-            console.log(`gps fixed at: ${position.coords} | ${position.coords.accuracy}`);
-
-            resolve({ accu, lat, long });
-          }, error,
-            {
-              enableHighAccuracy: true,
-              timeout: 10000,
-              maximumAge: 0 });
-        } else reject('no geolocation feature present on device');
+              resolve({ accu, lat, long });
+            },
+            (err) => {
+              // console.log(err);
+              reject(new Error(err.message));
+            }, options);
+        } else reject(new Error('no geolocation feature present on device'));
       });
     },
 
@@ -106,26 +115,35 @@ export default {
       const token = this.token;
 
       this.getLocation()
-        .then((location) => {
+        .then((position) => {
+          console.log(position);
           const params = {
-            lat: location.lat,
-            long: location.long,
+            // -37.815447, 144.958504
+            lat: position.lat,
+            long: position.long,
             rad: 250,
-            token,
           };
 
-          this.$http.get('https://vbapi.herokuapp.com/search/point', { params })
+          this.$http
+            .get('https://vbapi.herokuapp.com/search/point', {
+              headers: { 'x-access-token': token },
+              params,
+            })
             .then((res) => {
-              console.log(res);
               this.records = res.body.species;
-              console.log(this.records);
+              console.log(`${this.records.length} Records found`);
             });
+        }).catch((err) => {
+          this.status.error = err.message;
         });
     },
   },
 
   mounted() {
-    this.getToken();
+    this.getToken()
+      .then(() => {
+        this.status.token = 'Ready';
+      });
   },
 };
 </script>
@@ -136,14 +154,6 @@ export default {
 .app-viewport {
   display: flex;
   flex-flow: column;
-}
-
-
-html,
-body,
-.app {
-  height: 100%;
-  overflow: hidden;
 }
 
 </style>
