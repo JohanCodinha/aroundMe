@@ -12,8 +12,8 @@
         <p>Total count : {{specie.totalCountInt}}</p>
       </div>
 
-      <md-button class="md-icon-button md-list-action">
-        <md-icon class="md-primary">info</md-icon>
+      <md-button @click.native="toggleRightSidenav" class="md-icon-button md-list-action">
+        <md-icon :id="specie.taxonId" class="md-primary">info</md-icon>
       </md-button>
 
       <md-divider class="md-inset"></md-divider>
@@ -22,8 +22,23 @@
   <md-button @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
     <md-icon >my_location</md-icon>
   </md-button>
+<!--   <div>
+    <md-button class="md-raised md-accent" @click.native="toggleBottomSidenav">Toggle bottom</md-button>
+    <p>Open console to see the events</p>
+  </div> -->
+  <md-sidenav class="md-right" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
+    <md-toolbar>
+      <div class="md-toolbar-container">
+        <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon>{{selectedTaxon.commonNme}}</h3>
+      </div>
+    </md-toolbar>
+
+    <md-button class="md-raised md-accent" @click.native="closeRightSidenav">Close</md-button>
+  </md-sidenav>
   <!-- <pre>{{species}}</pre> -->
   <pre>{{status}}</pre>
+  <pre>{{selectedTaxonId}}</pre>
+  <pre>{{selectedTaxon}}</pre>
 </div>
 </template>
 
@@ -34,6 +49,7 @@ export default {
     const data = {
       records: [],
       token: 'blank',
+      selectedTaxonId: 0,
       status: {
         token: 'waiting for token',
         error: '',
@@ -42,6 +58,9 @@ export default {
     return data;
   },
   computed: {
+    selectedTaxon() {
+      return this.records.filter(record => record.taxonId === this.selectedTaxonId)[0] || {};
+    },
     species() {
       return this.records.reduce((accuSpecies, specie) => {
         const specieClone = Object.assign({}, {
@@ -132,6 +151,20 @@ export default {
           this.status.error = err.message;
         });
     },
+
+    toggleRightSidenav() {
+      this.selectedTaxonId = parseInt(event.target.id, 10);
+      this.$refs.rightSidenav.toggle();
+    },
+    closeRightSidenav() {
+      this.$refs.rightSidenav.close();
+    },
+    open(ref) {
+      console.log(`Opened: + ${ref}`);
+    },
+    close(ref) {
+      console.log(`Closed: + ${ref}`);
+    },
   },
 
   mounted() {
@@ -144,7 +177,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
+.md-right .md-sidenav-content{
+  width: 100%;
+}
+
 
 .md-list-item {
   list-style-type: none;
