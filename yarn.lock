@@ -5421,9 +5421,9 @@ vue-loader@^11.0.0:
     vue-style-loader "^2.0.0"
     vue-template-es2015-compiler "^1.2.2"
 
-vue-material@^0.7.1:
+"vue-material@https://github.com/JohanCodinha/vue-material/tarball/master":
   version "0.7.1"
-  resolved "https://registry.yarnpkg.com/vue-material/-/vue-material-0.7.1.tgz#2ed25eb1e2054c21fe323361604c92f40ef5ada1"
+  resolved "https://github.com/JohanCodinha/vue-material/tarball/master#227723e3b53d93021cd21dd5e8c9e93c2e246199"
   dependencies:
     vue "^2.1.10"
 
