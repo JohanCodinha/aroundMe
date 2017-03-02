@@ -24,7 +24,7 @@
     <md-icon >my_location</md-icon>
   </md-button>
 
-  <pre>{{status}}</pre>
+  <!-- <pre>{{status}}</pre> -->
 </div>
 </template>
 
@@ -184,8 +184,11 @@ export default {
           console.log(position);
           const params = {
             // -37.815447, 144.958504
-            lat: position.lat,
-            long: position.long,
+            // -37.778140, 145.010325
+            lat: -37.778140,
+            long: 145.010325,
+            // lat: position.lat,
+            // long: position.long,
             rad: 250,
           };
 
