@@ -20,29 +20,11 @@
       <md-list-item>{{selectedTaxon.scientificDisplayNme}}</md-list-item>
       <md-subheader>Count:</md-subheader>
       <md-list-item>{{selectedTaxon.totalCountInt}}</md-list-item>
-
-
     </md-list>
   </md-sidenav>
 
   <md-list>
-    <md-list-item v-for="specie in species" :specie="specie" :key="specie.taxonId" class="md-list-item">
-      <md-avatar>
-        <img :src="`https://placeimg.com/40/40/animals/${specie.taxonId}`" alt="People">
-      </md-avatar>
-
-      <div class="md-list-text-container">
-        <span>{{specie.commonNme}}</span>
-        <span>{{specie.scientificDisplayNme}}</span>
-        <p>Total count : {{specie.totalCountInt}}</p>
-      </div>
-
-      <md-button @click.native="toggleRightSidenav" :id="specie.taxonId" class="md-icon-button md-list-action">
-        <md-icon class="md-primary">info</md-icon>
-      </md-button>
-
-      <md-divider class="md-inset"></md-divider>
-    </md-list-item>
+    <specieItem @infoPanel="toggleRightSidenav" v-for="specie in species" :specie="specie" :key="specie.taxonId" ></specieItem>
   </md-list>
   <md-button @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
     <md-icon >my_location</md-icon>
@@ -55,8 +37,14 @@
 </template>
 
 <script>
+import specieItem from './specieItem';
+
 export default {
   name: 'speciesList',
+  components: {
+    specieItem,
+  },
+
   data() {
     const data = {
       records: [],
@@ -70,7 +58,23 @@ export default {
     return data;
   },
   computed: {
-    selectedTaxon() {
+    selectedTaxon(id) {
+      console.log(id);
+      this.$http
+      .get('http://collections.museumvictoria.com.au/api/search', {
+        params: {
+          recordType: 'species',
+          taxon: 'Tachyglossus aculeatus',
+        },
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        } })
+      .then((res) => {
+        console.log(res.body);
+      }).catch((e) => {
+        this.status.error = e;
+      });
+
       return this.records.filter(record => record.taxonId === this.selectedTaxonId)[0] || {};
     },
     species() {
@@ -164,8 +168,8 @@ export default {
         });
     },
 
-    toggleRightSidenav() {
-      this.selectedTaxonId = parseInt(event.currentTarget.id, 10);
+    toggleRightSidenav(id) {
+      this.selectedTaxonId = id;
       this.$refs.rightSidenav.toggle();
     },
     closeRightSidenav() {
