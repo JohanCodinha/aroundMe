@@ -1,7 +1,7 @@
 <template>
   <md-list-item class="md-list-item">
     <md-avatar>
-      <img :src="`https://placeimg.com/40/40/animals/${specie.taxonId}`" alt="People">
+      <img :src="specie.thumbnailUrl" alt="People">
     </md-avatar>
 
     <div class="md-list-text-container">

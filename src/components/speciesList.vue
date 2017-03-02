@@ -6,7 +6,7 @@
         <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
       </div>
     </md-toolbar>
-    <img src="https://www.australiazoo.com.au/our-animals/amazing-animals/images/profile_315_600.jpg" alt="">
+    <img :src="selectedTaxon.thumbnailUrl" alt="">
     <md-list>
       <md-subheader>Common name:</md-subheader>
       <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
@@ -48,6 +48,7 @@ export default {
   data() {
     const data = {
       records: [],
+      species: [],
       token: 'blank',
       selectedTaxonId: 0,
       status: {
@@ -57,25 +58,66 @@ export default {
     };
     return data;
   },
-  computed: {
-    selectedTaxon(id) {
-      console.log(id);
-      this.$http
-      .get('http://collections.museumvictoria.com.au/api/search', {
-        params: {
-          recordType: 'species',
-          taxon: 'Tachyglossus aculeatus',
-        },
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        } })
-      .then((res) => {
-        console.log(res.body);
-      }).catch((e) => {
-        this.status.error = e;
-      });
+  watch: {
+    records: function onRecordFetch(records) {
+      const species = records.reduce((accuSpecies, specie) => {
+        const specieClone = Object.assign({}, {
+          commonNme: specie.commonNme,
+          scientificDisplayNme: specie.scientificDisplayNme,
+          taxonId: specie.taxonId,
+          totalCountInt: Object.prototype.hasOwnProperty.call(specie, 'totalCountInt')
+            ? specie.totalCountInt
+            : 1,
+        });
 
-      return this.records.filter(record => record.taxonId === this.selectedTaxonId)[0] || {};
+        // specie already present in species ? increment count : add to species
+        const specieIndex = accuSpecies
+          .findIndex(accuspecie => accuspecie.taxonId === specieClone.taxonId);
+
+        if (specieIndex > -1) {
+          specieClone.totalCountInt += accuSpecies[specieIndex].totalCountInt;
+          return [...accuSpecies.slice(0, specieIndex),
+            specieClone,
+            ...accuSpecies.slice(specieIndex + 1)];
+        }
+        return [...accuSpecies, specieClone];
+      }, []);
+      const names = species.reduce((acc, specie) => [...acc, specie.scientificDisplayNme], []);
+
+      this.$http
+        .post('http://bie.ala.org.au/ws/species/lookup/bulk', { names })
+        .then((res) => {
+          console.log(res.body);
+          this.species = species.map((specie, index) => Object.assign({}, specie, {
+            thumbnailUrl: res.body[index].thumbnailUrl.replace(/http:\/\//, 'https://'),
+          }),
+          );
+        }).catch((e) => {
+          this.status.error = e;
+        });
+    },
+
+    // species: function onSpeciesChange(species) {
+    //   const names = species.reduce((acc, specie) => [...acc, specie.scientificDisplayNme], []);
+    //   this.$http
+    //     .post('http://bie.ala.org.au/ws/species/lookup/bulk', { names })
+    //     .then((res) => {
+    //       console.log(res.body);
+    //       this.species = this.species.map((specie, index) => {
+    //         const withImg = Object.assign({}, specie, {
+    //           thumbnailUrl: res.body[index].thumbnailUrl,
+    //         });
+    //         console.log(withImg);
+    //         return withImg;
+    //       });
+    //     }).catch((e) => {
+    //       this.status.error = e;
+    //     });
+    // },
+  },
+  computed: {
+    selectedTaxon() {
+      return this.species.filter(specie => specie.taxonId === this.selectedTaxonId)[0] || {};
     },
     species() {
       return this.records.reduce((accuSpecies, specie) => {
