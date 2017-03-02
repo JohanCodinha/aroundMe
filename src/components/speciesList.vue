@@ -77,7 +77,7 @@ export default {
       const names = species.reduce((acc, specie) => [...acc, specie.scientificDisplayNme], []);
 
       this.$http
-        .post('http://bie.ala.org.au/ws/species/lookup/bulk', { names })
+        .post('https://bie.ala.org.au/ws/species/lookup/bulk', { names })
         .then((res) => {
           console.log(res.body);
           this.species = species.map((specie, index) => Object.assign({}, specie, {
