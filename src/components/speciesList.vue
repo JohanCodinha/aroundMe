@@ -6,7 +6,7 @@
         <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
       </div>
     </md-toolbar>
-    <img src="http://collections.museumvictoria.com.au/content/media/27/728777-medium.jpg" alt="">
+    <img src="https://www.australiazoo.com.au/our-animals/amazing-animals/images/profile_315_600.jpg" alt="">
     <md-list>
       <md-subheader>Common name:</md-subheader>
       <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
@@ -120,7 +120,7 @@ export default {
       };
 
       return new Promise((resolve, reject) => {
-        resolve({ accu: '12', lat: '-37.809610', long: '144.972052' });
+        // return resolve({ accu: '12', lat: '-37.809610', long: '144.972052' });
         // /search/point?lat=-37.80812&long=144.97345&rad=250
         // -37.809610, 144.972052
         if ('geolocation' in navigator) {
