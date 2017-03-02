@@ -6,14 +6,8 @@
         <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
       </div>
     </md-toolbar>
-    <img :src="selectedTaxon.thumbnailUrl" alt="">
+    <img :src="selectedTaxon.smallImageUrl" alt="">
     <md-list>
-      <md-subheader>Common name:</md-subheader>
-      <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
-      <md-subheader>Scientific name:</md-subheader>
-      <md-list-item>{{selectedTaxon.scientificDisplayNme}}</md-list-item>
-      <md-subheader>Count:</md-subheader>
-      <md-list-item>{{selectedTaxon.totalCountInt}}</md-list-item>
       <md-subheader>Common name:</md-subheader>
       <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
       <md-subheader>Scientific name:</md-subheader>
@@ -26,13 +20,11 @@
   <md-list>
     <specieItem @infoPanel="toggleRightSidenav" v-for="specie in species" :specie="specie" :key="specie.taxonId" ></specieItem>
   </md-list>
-  <md-button @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
+  <md-button v-if="token !== 'blank'" @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
     <md-icon >my_location</md-icon>
   </md-button>
 
   <pre>{{status}}</pre>
-  <pre>selected taxonId: {{selectedTaxonId}}</pre>
-  <pre>{{selectedTaxon}}</pre>
 </div>
 </template>
 
@@ -89,6 +81,7 @@ export default {
         .then((res) => {
           console.log(res.body);
           this.species = species.map((specie, index) => Object.assign({}, specie, {
+            smallImageUrl: res.body[index].smallImageUrl.replace(/http:\/\//, 'https://'),
             thumbnailUrl: res.body[index].thumbnailUrl.replace(/http:\/\//, 'https://'),
           }),
           );
