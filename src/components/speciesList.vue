@@ -1,7 +1,32 @@
 <template>
 <div id="speciesList">
+  <md-sidenav class="md-sidenav md-right md-fixed" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
+    <md-toolbar>
+      <div class="md-toolbar-container">
+        <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
+      </div>
+    </md-toolbar>
+    <img src="http://collections.museumvictoria.com.au/content/media/27/728777-medium.jpg" alt="">
+    <md-list>
+      <md-subheader>Common name:</md-subheader>
+      <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
+      <md-subheader>Scientific name:</md-subheader>
+      <md-list-item>{{selectedTaxon.scientificDisplayNme}}</md-list-item>
+      <md-subheader>Count:</md-subheader>
+      <md-list-item>{{selectedTaxon.totalCountInt}}</md-list-item>
+      <md-subheader>Common name:</md-subheader>
+      <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
+      <md-subheader>Scientific name:</md-subheader>
+      <md-list-item>{{selectedTaxon.scientificDisplayNme}}</md-list-item>
+      <md-subheader>Count:</md-subheader>
+      <md-list-item>{{selectedTaxon.totalCountInt}}</md-list-item>
+
+
+    </md-list>
+  </md-sidenav>
+
   <md-list>
-    <md-list-item v-for="specie in species" :specie="specie" class="md-list-item">
+    <md-list-item v-for="specie in species" :specie="specie" :key="specie.taxonId" class="md-list-item">
       <md-avatar>
         <img :src="`https://placeimg.com/40/40/animals/${specie.taxonId}`" alt="People">
       </md-avatar>
@@ -12,8 +37,8 @@
         <p>Total count : {{specie.totalCountInt}}</p>
       </div>
 
-      <md-button @click.native="toggleRightSidenav" class="md-icon-button md-list-action">
-        <md-icon :id="specie.taxonId" class="md-primary">info</md-icon>
+      <md-button @click.native="toggleRightSidenav" :id="specie.taxonId" class="md-icon-button md-list-action">
+        <md-icon class="md-primary">info</md-icon>
       </md-button>
 
       <md-divider class="md-inset"></md-divider>
@@ -22,22 +47,9 @@
   <md-button @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
     <md-icon >my_location</md-icon>
   </md-button>
-<!--   <div>
-    <md-button class="md-raised md-accent" @click.native="toggleBottomSidenav">Toggle bottom</md-button>
-    <p>Open console to see the events</p>
-  </div> -->
-  <md-sidenav class="md-right" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
-    <md-toolbar>
-      <div class="md-toolbar-container">
-        <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon>{{selectedTaxon.commonNme}}</h3>
-      </div>
-    </md-toolbar>
 
-    <md-button class="md-raised md-accent" @click.native="closeRightSidenav">Close</md-button>
-  </md-sidenav>
-  <!-- <pre>{{species}}</pre> -->
   <pre>{{status}}</pre>
-  <pre>{{selectedTaxonId}}</pre>
+  <pre>selected taxonId: {{selectedTaxonId}}</pre>
   <pre>{{selectedTaxon}}</pre>
 </div>
 </template>
@@ -153,7 +165,7 @@ export default {
     },
 
     toggleRightSidenav() {
-      this.selectedTaxonId = parseInt(event.target.id, 10);
+      this.selectedTaxonId = parseInt(event.currentTarget.id, 10);
       this.$refs.rightSidenav.toggle();
     },
     closeRightSidenav() {
