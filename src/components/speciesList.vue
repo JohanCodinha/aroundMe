@@ -185,10 +185,10 @@ export default {
           const params = {
             // -37.815447, 144.958504
             // -37.778140, 145.010325
-            lat: -37.778140,
-            long: 145.010325,
-            // lat: position.lat,
-            // long: position.long,
+            // lat: -37.778140,
+            // long: 145.010325,
+            lat: position.lat,
+            long: position.long,
             rad: 250,
           };
 
