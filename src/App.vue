@@ -7,18 +7,40 @@
     </md-whiteframe>
 
     <main class="main-content">
-      <speciesList></speciesList>
+      <aroundView></aroundView>
     </main>
   </div>
 </template>
 
 <script>
-import speciesList from './components/speciesList';
+import aroundView from './views/aroundView';
+
 
 export default {
   name: 'app',
   components: {
-    speciesList,
+    aroundView,
+  },
+  data() {
+    const data = {
+      token: '',
+    };
+    return data;
+  },
+
+  methods: {
+    getToken() {
+      return this.$http
+      .get('https://vbapi.herokuapp.com/auth/guest')
+      .then(res => res.body.jwt);
+    },
+  },
+
+  mounted() {
+    this.getToken()
+      .then((token) => {
+        this.token = token;
+      });
   },
 };
 </script>
