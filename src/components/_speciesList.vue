@@ -1,31 +1,7 @@
 <template>
-<div id="speciesList">
-  <md-sidenav class="md-sidenav md-right md-fixed" ref="rightSidenav" @open="open('Right')" @close="close('Right')">
-    <md-toolbar>
-      <div class="md-toolbar-container">
-        <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
-      </div>
-    </md-toolbar>
-    <img :src="selectedTaxon.smallImageUrl" alt="">
-    <md-list>
-      <md-subheader>Common name:</md-subheader>
-      <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
-      <md-subheader>Scientific name:</md-subheader>
-      <md-list-item>{{selectedTaxon.scientificDisplayNme}}</md-list-item>
-      <md-subheader>Count:</md-subheader>
-      <md-list-item>{{selectedTaxon.totalCountInt}}</md-list-item>
-    </md-list>
-  </md-sidenav>
-
   <md-list>
     <specieItem @infoPanel="toggleRightSidenav" v-for="specie in species" :specie="specie" :key="specie.taxonId" ></specieItem>
   </md-list>
-  <md-button v-if="token !== 'blank'" @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
-    <md-icon >my_location</md-icon>
-  </md-button>
-
-  <!-- <pre>{{status}}</pre> -->
-</div>
 </template>
 
 <script>
@@ -41,10 +17,8 @@ export default {
     const data = {
       records: [],
       species: [],
-      token: 'blank',
       selectedTaxonId: 0,
       status: {
-        token: 'waiting for token',
         error: '',
       },
     };

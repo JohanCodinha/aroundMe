@@ -3,6 +3,10 @@
     <md-whiteframe md-elevation="1" md-theme="light-blue" class="main-toolbar">
       <md-toolbar class="main-toolbar">
         <h1 class="md-title">Vic Bio scan</h1>
+        <md-button class="md-icon-button" @click.native="viewChange()">
+          <md-icon v-if="this.views">view_module</md-icon>
+          <md-icon v-else>view_list</md-icon>
+        </md-button>
       </md-toolbar>
     </md-whiteframe>
 
@@ -24,6 +28,7 @@ export default {
   data() {
     const data = {
       token: '',
+      views: true,
     };
     return data;
   },
@@ -33,6 +38,10 @@ export default {
       return this.$http
       .get('https://vbapi.herokuapp.com/auth/guest')
       .then(res => res.body.jwt);
+    },
+
+    viewChange() {
+      this.views = !this.views;
     },
   },
 
@@ -66,5 +75,7 @@ body,
 .main-toolbar {
   position: relative;
   z-index: 10;
+  justify-content: space-between;
+
 }
 </style>

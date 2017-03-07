@@ -1,7 +1,8 @@
 <template>
   <md-list-item class="md-list-item">
     <md-avatar>
-      <img :src="specie.thumbnailUrl" alt="People">
+      <img :src="specie.thumbnailUrl" v-if="specie.thumbnailUrl">
+      <img src="http://emojione.com/wp-content/uploads/assets/emojis/1f43e.svg" alt="emoji" class="emoji" v-else>
     </md-avatar>
 
     <div class="md-list-text-container">
