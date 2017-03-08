@@ -30,12 +30,10 @@
       <div class="content">
         <img src="http://emojione.com/wp-content/uploads/assets/emojis/1f43e.svg" alt="emoji" class="emoji">
         <p class="truncate">{{specie.commonNme}}</p>
-        <md-icon class="md-primary">info</md-icon>
+        <md-icon class="md-primary" @click.native="toggleRightSidenavCard" :id="specie.taxonId">info</md-icon>
       </div>
     </md-whiteframe>
   </md-layout>
-
-
 
   <md-button v-if="this.$parent.token !== ''" @click.native="getRecordsByLoc()" style="position: fixed" class="md-button md-fab md-fab-bottom-right">
     <md-icon >my_location</md-icon>
@@ -112,82 +110,38 @@ export default {
           this.status.error = e;
         });
     },
-
-    // species: function onSpeciesChange(species) {
-    //   const names = species.reduce((acc, specie) => [...acc, specie.scientificDisplayNme], []);
-    //   this.$http
-    //     .post('http://bie.ala.org.au/ws/species/lookup/bulk', { names })
-    //     .then((res) => {
-    //       console.log(res.body);
-    //       this.species = this.species.map((specie, index) => {
-    //         const withImg = Object.assign({}, specie, {
-    //           thumbnailUrl: res.body[index].thumbnailUrl,
-    //         });
-    //         console.log(withImg);
-    //         return withImg;
-    //       });
-    //     }).catch((e) => {
-    //       this.status.error = e;
-    //     });
-    // },
   },
   computed: {
     selectedTaxon() {
       return this.species.filter(specie => specie.taxonId === this.selectedTaxonId)[0] || {};
     },
-    // species() {
-    //   return this.records.reduce((accuSpecies, specie) => {
-    //     const specieClone = Object.assign({}, {
-    //       commonNme: specie.commonNme,
-    //       scientificDisplayNme: specie.scientificDisplayNme,
-    //       taxonId: specie.taxonId,
-    //       totalCountInt: Object.prototype.hasOwnProperty.call(specie, 'totalCountInt')
-    //         ? specie.totalCountInt
-    //         : 1,
-    //     });
-
-    //     // specie already present in species ? increment count : add to species
-    //     const specieIndex = accuSpecies
-    //       .findIndex(accuspecie => accuspecie.taxonId === specieClone.taxonId);
-
-    //     if (specieIndex > -1) {
-    //       specieClone.totalCountInt += accuSpecies[specieIndex].totalCountInt;
-    //       return [...accuSpecies.slice(0, specieIndex),
-    //         specieClone,
-    //         ...accuSpecies.slice(specieIndex + 1)];
-    //     }
-    //     return [...accuSpecies, specieClone];
-    //   }, []);
-    // },
   },
 
   methods: {
     getLocation() {
-      // const options = {
-      //   enableHighAccuracy: true,
-      //   timeout: 10000,
-      //   maximumAge: 0,
-      // };
-      return new Promise(res => res({ accu: '12', lat: '-37.809610', long: '144.972052' }));
-      // return new Promise((resolve, reject) => {
-      //   // /search/point?lat=-37.80812&long=144.97345&rad=250
-      //   // -37.809610, 144.972052
-      //   if ('geolocation' in navigator) {
-      //     navigator.geolocation.getCurrentPosition(
-      //       (position) => {
-      //         const accu = position.coords.accuracy;
-      //         const lat = position.coords.latitude;
-      //         const long = position.coords.longitude;
-      //         console.log(`Position aquired, accuracy : ${position.coords.accuracy}`);
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      };
+      // return new Promise(res => res({ accu: '12', lat: '-37.809610', long: '144.972052' }));
+      return new Promise((resolve, reject) => {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const accu = position.coords.accuracy;
+              const lat = position.coords.latitude;
+              const long = position.coords.longitude;
+              console.log(`Position aquired, accuracy : ${position.coords.accuracy}`);
 
-      //         resolve({ accu, lat, long });
-      //       },
-      //       (err) => {
-      //         // console.log(err);
-      //         reject(new Error(err.message));
-      //       }, options);
-      //   } else reject(new Error('no geolocation feature present on device'));
-      // });
+              resolve({ accu, lat, long });
+            },
+            (err) => {
+              console.log(err);
+              reject(new Error(err.message));
+            }, options);
+        } else reject(new Error('no geolocation feature present on device'));
+      });
     },
 
     getRecordsByLoc() {
@@ -218,6 +172,12 @@ export default {
         }).catch((err) => {
           this.status.error = err.message;
         });
+    },
+
+    toggleRightSidenavCard() {
+      const taxonId = parseInt(event.currentTarget.id, 10);
+      this.selectedTaxonId = taxonId;
+      this.$refs.rightSidenav.toggle();
     },
 
     toggleRightSidenav(id) {
@@ -282,13 +242,16 @@ p{
 }
 
 .media {
-  height: auto;
+  height: 20vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .media img {
-  width: auto;
+  min-height: 50%;
+  min-width: 50%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 </style>
