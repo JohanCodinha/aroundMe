@@ -100,8 +100,8 @@ export default {
               const resSmallImageUrl = res.body[index].smallImageUrl;
               const resThumbnailUrl = res.body[index].thumbnailUrl;
               return Object.assign({}, specie, {
-                smallImageUrl: resSmallImageUrl ? resSmallImageUrl.replace(/https:\/\//, 'https://') : '',
-                thumbnailUrl: resThumbnailUrl ? resThumbnailUrl.replace(/https:\/\//, 'https://') : '',
+                smallImageUrl: resSmallImageUrl ? resSmallImageUrl.replace(/http:\/\//, 'https://') : '',
+                thumbnailUrl: resThumbnailUrl ? resThumbnailUrl.replace(/http:\/\//, 'https://') : '',
               });
             });
           } catch (e) {
@@ -134,11 +134,10 @@ export default {
               const lat = position.coords.latitude;
               const long = position.coords.longitude;
               console.log(`Position aquired, accuracy : ${position.coords.accuracy}`);
-
               resolve({ accu, lat, long });
             },
             (err) => {
-              console.log(err);
+              // console.log(err);
               reject(new Error(err.message));
             }, options);
         } else reject(new Error('no geolocation feature present on device'));
