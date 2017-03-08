@@ -41,6 +41,7 @@
   
   <pre>{{species}}</pre>
   <div>token ready ? {{this.$parent.token !== ''}}</div>
+  <pre>{{status}}</pre>
 </div>
 </template>
 
@@ -90,8 +91,8 @@ export default {
 
       const names = species.reduce((acc, specie) => [...acc, specie.scientificDisplayNme], []);
 
-      this.$https
-        .post('httpss://bie.ala.org.au/ws/species/lookup/bulk', { names })
+      this.$http
+        .post('https://bie.ala.org.au/ws/species/lookup/bulk', { names })
         .then((res) => {
           console.log(res.body, this.species);
           try {
@@ -99,8 +100,8 @@ export default {
               const resSmallImageUrl = res.body[index].smallImageUrl;
               const resThumbnailUrl = res.body[index].thumbnailUrl;
               return Object.assign({}, specie, {
-                smallImageUrl: resSmallImageUrl ? resSmallImageUrl.replace(/https:\/\//, 'httpss://') : '',
-                thumbnailUrl: resThumbnailUrl ? resThumbnailUrl.replace(/https:\/\//, 'httpss://') : '',
+                smallImageUrl: resSmallImageUrl ? resSmallImageUrl.replace(/https:\/\//, 'https://') : '',
+                thumbnailUrl: resThumbnailUrl ? resThumbnailUrl.replace(/https:\/\//, 'https://') : '',
               });
             });
           } catch (e) {
@@ -146,22 +147,16 @@ export default {
 
     getRecordsByLoc() {
       const token = this.$parent.token;
-      // debugger;
       this.getLocation()
         .then((position) => {
           console.log(position);
           const params = {
-            // -37.815447, 144.958504
-            // -37.778140, 145.010325
-            // lat: -37.778140,
-            // long: 145.010325,
             lat: position.lat,
             long: position.long,
             rad: 250,
           };
-
-          this.$https
-            .get('httpss://vbapi.herokuapp.com/search/point', {
+          this.$http
+            .get('https://vbapi.herokuapp.com/search/point', {
               headers: { 'x-access-token': token },
               params,
             })
@@ -170,6 +165,7 @@ export default {
               console.log(`${this.records.length} Records found`);
             });
         }).catch((err) => {
+          console.log(err);
           this.status.error = err.message;
         });
     },
@@ -181,6 +177,7 @@ export default {
     },
 
     toggleRightSidenav(id) {
+      console.log(this.selectedTaxonId, id);
       this.selectedTaxonId = id;
       this.$refs.rightSidenav.toggle();
     },
