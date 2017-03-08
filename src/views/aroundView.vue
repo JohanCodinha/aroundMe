@@ -6,7 +6,7 @@
         <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
       </div>
     </md-toolbar>
-    <img :src="selectedTaxon.smallImageUrl" alt="">
+    <img style="max-height: 75vh" :src="selectedTaxon.smallImageUrl" alt="">
     <md-list>
       <md-subheader>Common name:</md-subheader>
       <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
@@ -25,10 +25,10 @@
     <md-whiteframe md-elevation="1" class="card" v-for="specie in species" :specie="specie" :key="specie.taxonId">
       <div class="media">
         <img :src="specie.thumbnailUrl" v-if="specie.thumbnailUrl">
-        <img src="http://emojione.com/wp-content/uploads/assets/emojis/1f43e.svg" alt="emoji" class="emoji" v-else>
+        <img src="https://emojione.com/wp-content/uploads/assets/emojis/1f43e.svg" alt="emoji" class="emoji" v-else>
       </div>
       <div class="content">
-        <img src="http://emojione.com/wp-content/uploads/assets/emojis/1f43e.svg" alt="emoji" class="emoji">
+        <img src="https://emojione.com/wp-content/uploads/assets/emojis/1f43e.svg" alt="emoji" class="emoji">
         <p class="truncate">{{specie.commonNme}}</p>
         <md-icon class="md-primary" @click.native="toggleRightSidenavCard" :id="specie.taxonId">info</md-icon>
       </div>
@@ -90,8 +90,8 @@ export default {
 
       const names = species.reduce((acc, specie) => [...acc, specie.scientificDisplayNme], []);
 
-      this.$http
-        .post('https://bie.ala.org.au/ws/species/lookup/bulk', { names })
+      this.$https
+        .post('httpss://bie.ala.org.au/ws/species/lookup/bulk', { names })
         .then((res) => {
           console.log(res.body, this.species);
           try {
@@ -99,8 +99,8 @@ export default {
               const resSmallImageUrl = res.body[index].smallImageUrl;
               const resThumbnailUrl = res.body[index].thumbnailUrl;
               return Object.assign({}, specie, {
-                smallImageUrl: resSmallImageUrl ? resSmallImageUrl.replace(/http:\/\//, 'https://') : '',
-                thumbnailUrl: resThumbnailUrl ? resThumbnailUrl.replace(/http:\/\//, 'https://') : '',
+                smallImageUrl: resSmallImageUrl ? resSmallImageUrl.replace(/https:\/\//, 'httpss://') : '',
+                thumbnailUrl: resThumbnailUrl ? resThumbnailUrl.replace(/https:\/\//, 'httpss://') : '',
               });
             });
           } catch (e) {
@@ -160,8 +160,8 @@ export default {
             rad: 250,
           };
 
-          this.$http
-            .get('https://vbapi.herokuapp.com/search/point', {
+          this.$https
+            .get('httpss://vbapi.herokuapp.com/search/point', {
               headers: { 'x-access-token': token },
               params,
             })
