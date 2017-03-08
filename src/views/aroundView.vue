@@ -6,7 +6,7 @@
         <h3 class="md-title"><md-icon @click.native="closeRightSidenav" >arrow_back</md-icon> {{selectedTaxon.commonNme}}</h3>
       </div>
     </md-toolbar>
-    <img style="max-height: 75vh" :src="selectedTaxon.smallImageUrl" alt="">
+    <img style="max-height: 75vh" :src="selectedTaxon.smallImageUrl" alt="" v-if="selectedTaxon.smallImageUrl">
     <md-list>
       <md-subheader>Common name:</md-subheader>
       <md-list-item>{{selectedTaxon.commonNme}}</md-list-item>
