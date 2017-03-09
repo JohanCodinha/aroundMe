@@ -120,28 +120,28 @@ export default {
 
   methods: {
     getLocation() {
-      const options = {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      };
-      // return new Promise(res => res({ accu: '12', lat: '-37.809610', long: '144.972052' }));
-      return new Promise((resolve, reject) => {
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const accu = position.coords.accuracy;
-              const lat = position.coords.latitude;
-              const long = position.coords.longitude;
-              console.log(`Position aquired, accuracy : ${position.coords.accuracy}`);
-              resolve({ accu, lat, long });
-            },
-            (err) => {
-              // console.log(err);
-              reject(new Error(err.message));
-            }, options);
-        } else reject(new Error('no geolocation feature present on device'));
-      });
+      // const options = {
+      //   enableHighAccuracy: true,
+      //   timeout: 10000,
+      //   maximumAge: 0,
+      // };
+      return new Promise(res => res({ accu: '12', lat: '-37.809610', long: '144.972052' }));
+      // return new Promise((resolve, reject) => {
+      //   if ('geolocation' in navigator) {
+      //     navigator.geolocation.getCurrentPosition(
+      //       (position) => {
+      //         const accu = position.coords.accuracy;
+      //         const lat = position.coords.latitude;
+      //         const long = position.coords.longitude;
+      //         console.log(`Position aquired, accuracy : ${position.coords.accuracy}`);
+      //         resolve({ accu, lat, long });
+      //       },
+      //       (err) => {
+      //         // console.log(err);
+      //         reject(new Error(err.message));
+      //       }, options);
+      //   } else reject(new Error('no geolocation feature present on device'));
+      // });
     },
 
     getRecordsByLoc() {

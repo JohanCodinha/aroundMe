@@ -36,7 +36,8 @@ export default {
   methods: {
     getToken() {
       return this.$http
-      .get('https://vbapi.herokuapp.com/auth/guest')
+      // .get('https://vbapi.herokuapp.com/auth/guest')
+      .get('https://vbapi.herokuapp.com/auth/offline')
       .then(res => res.body.jwt);
     },
 
